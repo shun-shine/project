@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>测试环境页面</title>
+    <!-- 引入elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./styles/login.css">
+
+    <!-- 引入vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- 引入elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+</head>
+
+<body>
+    <!-- 准备dom容器 -->
+    <div id="app">
+        <div class="login-form">
+            <h2 class="title">
+                <i class="el-icon-menu"></i>
+                超市管理系统登录
+            </h2>
+            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="用户名" prop="username">
+                    <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="密&emsp;码" prop="password">
+                    <el-input type="text" v-model="loginForm.password" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword">
+                    <el-input  v-model="loginForm.confirmPassword"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                // 自己写一个检查密码的函数
+                let checkPass = (rule, value, callback) => {
+                    // 如果为空 请再次输入密码
+                    if (value === '') {
+                        callback(new Error("请再次输入密码！"))
+                    } else if (value != this.loginForm.password) {      // 如果不等于密码的值 提示 密码不一致
+                        callback(new Error("两次输入密码不一致！"))
+                    } else {
+                        callback();   // 成功的回调
+                    }
+                }
+                return {
+                    // 表单需要的数据源
+                    loginForm: {
+                        username: '',  // 用户名
+                        password: '',  // 密码
+                        confirmPassword: '' // 确认密码
+                    },
+                    // 验证规则
+                    rules: {
+                        // 验证用户名
+                        username: [
+                            {required: true, message: '请输入用户名', trigger: 'blur'}, // 非空验证
+                            {min: 5, max: 12, message: '用户名长度在 5 到 12 个字符', trigger: 'blur'} // 长度验证
+                        ],
+                        // 验证密码
+                        password: [
+                            {required: true, message: '请输入密码', trigger: 'blur'}, // 非空验证
+                            {min: 6, max: 12, message: '密码长度在 6 到 12 个字符', trigger: 'blur'} // 长度验证
+                        ],
+                        // 验证确认密码 (自定义验证规则)
+                        confirmPassword: [
+                            { validator: checkPass, trigger: 'blur' }  // 自定义验证函数
+                        ],
+                    }
+                };
+            },
+            methods: {
+                // 提交表单
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        // 如果验证通过 valid就是true 否则 就是false
+                        if (valid) {
+                            // 验证通过 允许把用户名和密码 发送给后端 (需要写ajax)
+
+                            alert('前端验证通过!可以发给后端!');
+                        } else {
+                            // 前端验证不通过 不允许提交
+                            console.log('前端验证失败 不允许提交!');
+                            return false;
+                        }
+                    });
+                },
+                // 重置表单
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

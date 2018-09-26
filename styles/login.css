@@ -1,0 +1,31 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+#app {
+    background-image: url('../images/body_bg.png');
+    height: 100%;
+    position: relative;
+}
+
+
+.login-form {
+    padding-right: 30px;
+    border-radius: 7px;
+    width: 420px;
+    height: 320px;
+    position: absolute;
+    background-color: #fff;
+
+    /* 水平垂直居中 */
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.login-form .title {
+   margin-left: 42px;
+}

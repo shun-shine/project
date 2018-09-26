@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- 引入elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+
+    <!-- 引入vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- 引入elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+</head>
+
+<body>
+    <!-- 准备dom容器 -->
+    <div id="app">
+        <!-- 整个页面的容器 -->
+        <el-container>
+            <!-- 左侧导航容器 -->
+            <el-aside width="230px">
+                <!-- 左侧导航上部分文本 -->
+                <div class="menu-top-text">
+                    <h2>华联超市管理系统</h2>
+                    <p>您好, admin</p>
+                    <p>
+                        <a href="">管理首页</a> |
+                        <a href="">退出系统</a>
+                    </p>
+                </div>
+
+                <!-- 导航菜单 -->
+                <el-menu :unique-opened="true">
+                    <!-- 账号管理 -->
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <i class="el-icon-circle-plus-outline"></i>账号管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="1-1">添加账号</el-menu-item>
+                            <el-menu-item index="1-2">账号列表</el-menu-item>
+                            <el-menu-item index="1-3">密码修改</el-menu-item>
+                        </el-menu-item-group>
+
+                    </el-submenu>
+                    <!-- 商品管理 -->
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-goods"></i>商品管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1">添加商品</el-menu-item>
+                            <el-menu-item index="2-2">商品列表</el-menu-item>
+                        </el-menu-item-group>
+
+                    </el-submenu>
+                    <!-- 进货管理 -->
+                    <el-submenu index="3">
+                        <template slot="title">
+                            <i class="el-icon-tickets"></i>进货管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="3-1">添加库存</el-menu-item>
+                            <el-menu-item index="3-2">库存列表</el-menu-item>
+                        </el-menu-item-group>
+
+                    </el-submenu>
+                    <!-- 出货管理 -->
+                    <el-submenu index="4">
+                        <template slot="title">
+                            <i class="el-icon-sold-out"></i>出货管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="4-1">销售列表</el-menu-item>
+                            <el-menu-item index="4-2">商品出库</el-menu-item>
+                            <el-menu-item index="4-3">商品退货</el-menu-item>
+                        </el-menu-item-group>
+
+                    </el-submenu>
+                    <!-- 系统信息 -->
+                    <el-submenu index="5">
+                        <template slot="title">
+                            <i class="el-icon-sold-out"></i>系统管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="5-1">系统信息</el-menu-item>
+                        </el-menu-item-group>
+
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+
+            <!-- 右侧内容容器 -->
+            <el-container>
+                <!-- 右侧头部 -->
+                <el-header>
+                    <h2>欢迎您 admin</h2>
+                    <p>账号管理</p>
+                </el-header>
+                <!-- 右侧主体 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>账号管理</span>
+                        </div>
+                        <div class="text item">
+                            <!-- 用户列表表格 -->
+                            <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+                                <!-- 选择框 -->
+                                <el-table-column type="selection" width="55">
+                                </el-table-column>
+
+                                <!-- 用户名 -->
+                                <el-table-column prop="username" label="用户名" >
+                                </el-table-column>
+
+                                <!-- 用户组别 -->
+                                <el-table-column prop="group" label="用户组别"  show-overflow-tooltip>
+                                </el-table-column>
+
+                                <!-- 日期 -->
+                                <el-table-column label="日期" >
+                                    <template slot-scope="scope">{{ scope.row.date }}</template>
+                                </el-table-column>
+                                <!-- 操作 -->
+                                <el-table-column label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
+                                            <i class="el-icon-edit"></i>
+                                            编辑
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
+                                            <i class="el-icon-delete"></i>
+                                            删除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+
+                            </el-table>
+                            <!-- <div style="margin-top: 20px">
+                                <el-button @click="toggleSelection([tableData3[1], tableData3[2]])">切换第二、第三行的选中状态</el-button>
+                                <el-button @click="toggleSelection()">取消选择</el-button>
+                            </div> -->
+
+                        </div>
+                    </el-card>
+                </el-main>
+                <!-- 右侧尾部 -->
+                <el-footer>
+                    &copy; Copyright 2018 华联超市管理系统
+                </el-footer>
+            </el-container>
+
+        </el-container>
+    </div>
+
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    // 表格数据
+                    tableData: [
+                        {
+                            username: '王小虎1',
+                            group: '超级管理员',
+                            date: '2016-05-01',
+                        },
+                        {
+                            username: '王小虎2',
+                            group: '超级管理员',
+                            date: '2016-05-02',
+                        },
+                        {
+                            username: '王小虎3',
+                            group: '超级管理员',
+                            date: '2016-05-03',
+                        },
+                        {
+                            username: '王小虎4',
+                            group: '超级管理员',
+                            date: '2016-05-04',
+                        }
+                    ],
+                    multipleSelection: []
+                }
+            },
+
+            methods: {
+                toggleSelection(rows) {
+                    if (rows) {
+                        rows.forEach(row => {
+                            this.$refs.multipleTable.toggleRowSelection(row);
+                        });
+                    } else {
+                        this.$refs.multipleTable.clearSelection();
+                    }
+                },
+                handleSelectionChange(val) {
+                    this.multipleSelection = val;
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

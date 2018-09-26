@@ -1,0 +1,166 @@
+.el-header, .el-footer {
+    color: #333;
+    text-align: center;
+}
+  
+.el-aside {
+    background-image: url('../images/left_bg.png');
+    color: #333;
+    text-align: right;
+    padding-top: 30px;
+}
+
+.el-main {
+color: #333;
+text-align: center;
+}
+
+body > .el-container {
+margin-bottom: 40px;
+}
+
+.text {
+    font-size: 14px;
+  }
+
+.item {
+margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+display: table;
+content: "";
+}
+.clearfix:after {
+clear: both
+}
+
+
+/* 下面是自己写的样式 */
+
+  /* 清除浏览器默认样式 宽高设置为100% */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#app {
+    height: 100%;
+}
+
+#app .el-container {
+    height: 100%;
+}
+
+.el-aside {
+    color: #fff;
+} 
+
+.el-aside .menu-top-text {
+    padding-right: 20px;
+}
+
+.el-aside p {
+    font-size: 12px;
+}
+
+.el-aside p a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.el-menu {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+}
+
+.el-submenu {
+    background-color: transparent;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.el-submenu .el-submenu__title {
+    color: #fff;
+    height: 33px;
+    line-height: 33px;
+    background-image: url('../images/menu_bg.png');
+    padding-right: 50px;
+    margin-left: 30px;
+    border-radius: 4px 0 0 4px;
+}
+
+.el-menu-item-group__title {
+    padding: 0;
+}
+
+.el-submenu .el-submenu__title i {
+    color: #fff;
+}
+
+.el-menu-item-group .el-menu-item {
+    color: #fff;
+    line-height: 33px;
+    height: 33px;
+}
+.el-menu-item-group .el-menu-item.is-active {
+    background-color:transparent;
+    color: greenyellow;
+}
+
+.el-menu-item-group .el-menu-item:hover {
+    background-color: transparent;
+    color: #ccc;
+}
+
+.el-header {
+    text-align: left;
+    padding: 20px;
+    /* line-height: 60px; */
+    height: 100px!important;
+    /* margin-bottom: 30px; */
+}
+
+.el-header h2 {
+    padding: 0;
+    margin: 0;
+}
+
+.el-header p {
+    padding: 0;
+    margin: 0;
+}
+
+
+.el-card .el-card__header {
+    padding: 10px 10px;
+    text-align: left;
+    background-color: #f1f1f1;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.el-card .el-card__body .el-alert {
+    margin-bottom: 10px;
+}
+.el-table__body-wrapper {
+    text-align: left;
+}
+
+.el-footer {
+    padding-top: 20px;
+    font-size: 12px;
+    color: #333;
+    text-align: left;
+    border-top: 1px solid #ccc;
+}
+
+.addUserForm {
+    width: 300px;
+}
+.addUserForm .el-form-item .el-input input {
+    height: 30px;
+}
