@@ -22,7 +22,7 @@
     <div id="app">
         <div class="login-form">
             <h2 class="title">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-goods"></i>
                 超市管理系统登录
             </h2>
             <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
@@ -92,8 +92,8 @@
                         // 如果验证通过 valid就是true 否则 就是false
                         if (valid) {
                             // 验证通过 允许把用户名和密码 发送给后端 (需要写ajax)
-
-                            alert('前端验证通过!可以发给后端!');
+                            alert('前端验证通过!可以发给后端!' + ', 用户名是：'+ this.loginForm.username + ',密码是:'+this.loginForm.password);
+                            
                         } else {
                             // 前端验证不通过 不允许提交
                             console.log('前端验证失败 不允许提交!');
@@ -107,6 +107,7 @@
                 }
             }
         })
+      
     </script>
 
 </body>

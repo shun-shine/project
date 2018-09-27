@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>主页</title>
+    <!-- 引入elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+
+    <!-- 引入vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- 引入elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+</head>
+
+<body>
+    <!-- 准备dom容器 -->
+    <div id="app">
+        <!-- 右侧内容容器 -->
+        <el-container>
+            <!-- 右侧头部 -->
+            <el-header>
+                <h2>欢迎您 admin</h2>
+                <p>查看详细系统信息</p>
+            </el-header>
+            <!-- 右侧主体 -->
+            <el-main>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>系统信息</span>
+                    </div>
+                    <div class="text item">
+                        <!-- 这里是卡片内容部分 -->
+                        <el-alert title="成功提示的文案" type="success" show-icon>
+                        </el-alert>
+                        <el-alert title="消息提示的文案" type="info" show-icon>
+                        </el-alert>
+
+                        <!-- 两个表格 -->
+                        <el-row :gutter="20">
+                            <!-- 左侧 -->
+                            <el-col :span="12">
+                                <div class="grid-content bg-purple">
+                                    <el-card>
+                                        <div slot="header" class="clearfix">
+                                            <span>销售排行</span>
+                                        </div>
+                                        <div class="text item">
+                                            <el-table :data="tableData" style="width: 100%">
+                                                <el-table-column prop="goodsname" label="商品名称">
+                                                </el-table-column>
+                                                <el-table-column prop="sales" label="销量">
+                                                </el-table-column>
+
+                                            </el-table>
+                                        </div>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                            <!-- 右侧 -->
+                            <el-col :span="12">
+                                <div class="grid-content bg-purple-light">
+                                    <el-card>
+                                        <div slot="header" class="clearfix">
+                                            <span>销售排行</span>
+                                        </div>
+                                        <div class="text item">
+                                            <el-table :data="tableData" style="width: 100%">
+                                                <el-table-column prop="goodsname" label="商品名称">
+                                                </el-table-column>
+                                                <el-table-column prop="sales" label="销量">
+                                                </el-table-column>
+
+                                            </el-table>
+                                        </div>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                        </el-row>
+
+                    </div>
+                </el-card>
+            </el-main>
+            <!-- 右侧尾部 -->
+            <el-footer>
+                &copy; Copyright 2018 华联超市管理系统
+            </el-footer>
+        </el-container>
+    </div>
+
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    tableData: [
+                        {
+                            goodsname: '茅台酒',
+                            sales: '18,000'
+                        },
+                        {
+                            goodsname: '茅台酒',
+                            sales: '18,000'
+                        },
+                        {
+                            goodsname: '茅台酒',
+                            sales: '18,000'
+                        },
+                        {
+                            goodsname: '茅台酒',
+                            sales: '18,000'
+                        }
+                    ]
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

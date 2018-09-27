@@ -11,9 +11,8 @@ html, body {
 
 
 .login-form {
-    padding-right: 30px;
     border-radius: 7px;
-    width: 420px;
+    width: 400px;
     height: 320px;
     position: absolute;
     background-color: #fff;
@@ -26,6 +25,10 @@ html, body {
     margin: auto;
 }
 
+.login-form .demo-ruleForm{
+     padding-right: 30px;
+}
+
 .login-form .title {
-   margin-left: 42px;
+   text-align: center;
 }
