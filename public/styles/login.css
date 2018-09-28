@@ -32,3 +32,14 @@ html, body {
 .login-form .title {
    text-align: center;
 }
+
+.el-button--default:hover{
+    background-color: #67c23a21;
+    color: #67c23ae0;
+    border: 1px solid #67c23a;
+}
+.el-button--default:focus{
+    background-color: #67c23a21;
+    color: #67c23ae0;
+    border: 1px solid #67c23a;
+}

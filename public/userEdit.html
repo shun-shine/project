@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>华联超市管理系统</title>
+    <title>修改用户账号</title>
     <!-- jquery.min.js -->
     <script src="./libs/jquery/jquery.min.js"></script>
     <!-- 引入elementui.min.css -->
@@ -29,32 +29,29 @@
                 <!-- 右侧头部 -->
                 <el-header>
                     <h2>欢迎您 admin</h2>
-                    <p>添加管理员账号</p>
+                    <p>修改用户账号</p>
                 </el-header>
                 <!-- 右侧主体 -->
                 <el-main>
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
-                            <span>添加管理员账号</span>
+                            <span>修改用户账号</span>
                         </div>
                         <div class="text item">
                             <!-- 添加账号的表单 -->
-                            <el-form :model="loginForm" class="addUserForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                            <el-form :model="editForm" class="addUserForm" status-icon :rules="rules" ref="editForm"
+                            label-width="100px" class="demo-ruleForm">
                                 <!-- 用户名 -->
                                 <el-form-item label="用户名" prop="username">
-                                    <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                                    <el-input type="text" v-model="editForm.username" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <!-- 密码 -->
                                 <el-form-item label="密&emsp;码" prop="password">
-                                    <el-input type="text" v-model="loginForm.password" autocomplete="off"></el-input>
-                                </el-form-item>
-                                <!-- 确认密码 -->
-                                <el-form-item label="确认密码" prop="confirmPassword">
-                                    <el-input v-model="loginForm.confirmPassword"></el-input>
+                                    <el-input type="text" v-model="editForm.password" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <!-- 选择用户组 -->
                                 <el-form-item label="选择用户组" prop="group">
-                                    <el-select v-model="loginForm.group" placeholder="请选择用户组">
+                                    <el-select v-model="editForm.group" placeholder="请选择用户组">
                                         <el-option label="普通用户" value="普通用户"></el-option>
                                         <el-option label="超级管理员" value="超级管理员"></el-option>
                                     </el-select>
@@ -62,11 +59,10 @@
 
                                 <!-- 登录&重置 -->
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('loginForm')">添加</el-button>
-                                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                                    <el-button type="success" @click="submitForm('editForm')">修改</el-button>
+                                    <el-button @click="resetForm('editForm')">重置</el-button>
                                 </el-form-item>
                             </el-form>
-
                         </div>
                     </el-card>
                 </el-main>
@@ -89,7 +85,7 @@
                     // 如果为空 请再次输入密码
                     if (value === '') {
                         callback(new Error("请再次输入密码！"))
-                    } else if (value != this.loginForm.password) {      // 如果不等于密码的值 提示 密码不一致
+                    } else if (value != this.editForm.password) {      // 如果不等于密码的值 提示 密码不一致
                         callback(new Error("两次输入密码不一致！"))
                     } else {
                         callback();   // 成功的回调
@@ -97,10 +93,9 @@
                 }
                 return {
                     // 表单需要的数据源
-                    loginForm: {
+                    editForm: {
                         username: '',  // 用户名
                         password: '',  // 密码
-                        confirmPassword: '', // 确认密码
                         group: ''
                     },
                     // 验证规则
@@ -115,16 +110,27 @@
                             { required: true, message: '请输入密码', trigger: 'blur' }, // 非空验证
                             { min: 6, max: 12, message: '密码长度在 6 到 12 个字符', trigger: 'blur' } // 长度验证
                         ],
-                        // 验证确认密码 (自定义验证规则)
-                        confirmPassword: [
-                            { validator: checkPass, required: true, trigger: 'blur' }  // 自定义验证函数
-                        ],
                         // 选择用户组
                         group: [
-                            {required: true, message: "请选择用户组", trigger:'change'}
+                            { required: true, message: "请选择用户组", trigger: 'change' }
                         ]
                     }
                 };
+            },
+            // 生命周期钩子函数
+            created() {
+                // 保留this
+                var _this = this;
+                // 获取id
+                let id = location.href.split('=')[1];
+                // 发送ajax 把id给后端
+                $.get(`/users/useredit?id=${id}`, function (data) {
+                    // 把接收的数据一一对应填会表单
+                    _this.editForm.username = data[0].username
+                    _this.editForm.password = data[0].password
+                    _this.editForm.group = data[0].groups
+
+                });
             },
             methods: {
                 // 提交表单
@@ -133,29 +139,27 @@
                         // 如果验证通过 valid就是true 否则 就是false
                         if (valid) {
                             // 验证通过 允许把用户名和密码 发送给后端 (需要写ajax    
-                            
+
                             // 定义参数对象
                             const params = {
-                                "username": this.loginForm.username,
-                                "password": this.loginForm.password,
-                                "group": this.loginForm.group
+                                username: this.editForm.username,
+                                password: this.editForm.password,
+                                group: this.editForm.group,
+                                id: location.href.split('=')[1]
                             }
-                            console.log(params.group);
 
                             // 构造ajax 把数据发送个后端
-                            $.post('/users/userAdd', params, function (data) {
+                            $.post('/users/edit', params, function (data) {
                                 // 如果成功 弹出对应的提示信息   data.errcode === 1
                                 if (data.errcode === 1) {
                                     alert(data.msg);
-                                    // 》》跳 转到用户账号列表页面
+                                    // 跳 转到用户账号列表页面
                                     location.href = "./userList.html";
                                 } else {
-                                // 否则 就是失败 弹出对应的提示信息  data.errcode === 0
+                                    // 否则 就是失败 弹出对应的提示信息  data.errcode === 0
                                     alert(data.msg)
                                 }
                             })
-                            
-
                         } else {
                             // 前端验证不通过 不允许提交
                             console.log('前端验证失败 不允许提交!');

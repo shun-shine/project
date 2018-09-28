@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>测试环境页面</title>
+    <title>登录</title>
+    <!-- 引入jquery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- 引入elementui.min.css -->
     <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
     <!-- 引入自定义样式 -->
@@ -36,7 +38,7 @@
                     <el-input  v-model="loginForm.confirmPassword"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                    <el-button type="success" @click="submitForm('loginForm')">登录</el-button>
                     <el-button @click="resetForm('loginForm')">重置</el-button>
                 </el-form-item>
             </el-form>
@@ -91,9 +93,22 @@
                     this.$refs[formName].validate((valid) => {
                         // 如果验证通过 valid就是true 否则 就是false
                         if (valid) {
-                            // 验证通过 允许把用户名和密码 发送给后端 (需要写ajax)
-                            alert('前端验证通过!可以发给后端!' + ', 用户名是：'+ this.loginForm.username + ',密码是:'+this.loginForm.password);
-                            
+                            // 收集用户输入的用户名和密码
+                            let userinfo = {
+                                username: this.loginForm.username,
+                                password: this.loginForm.password
+                            }
+                            // 发送ajax请求给后端 把用户名和密码给后端
+                            $.post('/users/checklogin', userinfo, function (data) {
+                                // 如果成功弹出成功提示 跳到首页
+                                if (data.errcode === 1) {
+                                    alert(data.msg);
+                                    location.href = './index.html'
+                                } else{
+                                    // 否则 弹出失败提示
+                                    alert(data.msg);
+                                }
+                            })
                         } else {
                             // 前端验证不通过 不允许提交
                             console.log('前端验证失败 不允许提交!');
