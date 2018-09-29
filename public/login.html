@@ -32,10 +32,10 @@
                     <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="密&emsp;码" prop="password">
-                    <el-input type="text" v-model="loginForm.password" autocomplete="off"></el-input>
+                    <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="确认密码" prop="confirmPassword">
-                    <el-input  v-model="loginForm.confirmPassword"></el-input>
+                    <el-input type="password" v-model="loginForm.confirmPassword"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="success" @click="submitForm('loginForm')">登录</el-button>

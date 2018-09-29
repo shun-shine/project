@@ -9,7 +9,7 @@ connection.connect(() => {
   console.log('数据库连接成功!');
 });
 
-/* 检查用户名和密码 */
+/* 检查用户名和密码的请求 */
 router.post('/checklogin', (req, res) => {
   // 接受用户和密码
   let {username, password} = req.body;
@@ -28,6 +28,7 @@ router.post('/checklogin', (req, res) => {
         res.cookie('username', data[0].username);
         res.cookie('password', data[0].password);
         res.cookie('groups', data[0].groups);
+        res.cookie('userId', data[0].id);
 
         res.send({'errcode': 1, 'msg': '恭喜你，登录成功！'});
       }else{
@@ -37,7 +38,7 @@ router.post('/checklogin', (req, res) => {
   })
 })
 
-/* 检测用户是否登录 */
+/* 检测用户是否登录的请求 */
 router.get('/checkIsLogin', (req, res) => {
   // 从浏览器获取cookie
   let username = req.cookies.username;
@@ -50,7 +51,7 @@ router.get('/checkIsLogin', (req, res) => {
   }
 })
 
-/* 退出登录 */
+/* 退出登录的请求 */
 router.get('/loginout', (req, res) => {
   // 清除cookie
   res.clearCookie('username');
@@ -91,8 +92,11 @@ router.post('/userAdd', (req, res) => {
 
 /* 接收显示所有用户账号的请求 */
 router.get('/userList', (req, res) => {
+  // 接收前端参数请求 
+  let { pageSize, currentPage } = req.query;
+
   // 构造sql (查询所有用户账号)
-  const sqlStr = 'select * from users order by ctime desc';
+  let sqlStr = 'select * from users';
 
   // 执行sql （执行查询所有用户账号数据）
   connection.query(sqlStr, (err, data) => {
@@ -100,11 +104,71 @@ router.get('/userList', (req, res) => {
     if (err) {
       throw err;
     } else {
-      // 否则  直接把查询的所有数据 响应给前端
-      res.send(data);
+      // 计算数据总条数
+      let totalCount = data.length;
+
+      // 计算跳过多少条
+      let n = (currentPage - 1) * pageSize;
+
+      // 构造sql语句
+      sqlStr += ` order by ctime desc limit ${n}, ${pageSize}`;
+
+      // 执行sql语句
+      connection.query(sqlStr, (err, data) => {
+        if (err) {
+          throw err;
+        } else {
+          // 把数据总条数 和当前页码对应的数据 发给前端
+          res.send({'totalCount': totalCount, 'pageData': data})
+        }
+      })
     }
   })
 });
+
+/* 修改密码的请求 */
+router.get('/checkpwd', (req, res) => {
+  // 接收旧密码
+  let { password } = req.query;
+  // 从cookie里取出当前登录用户id
+  const id = req.cookies.userId
+  // 根据id 构造sql查询语句
+  const sqlStr = `select * from users where id=${id}`;
+
+  // 执行sql语句
+  connection.query(sqlStr, (err, data) => {
+    // 如果有错 抛出错误
+    if (err) {
+      throw err;
+    } else {
+      if (data[0].password === password) {
+        res.send({'errcode':1, 'msg':'旧密码输入正确！'})
+      } else {
+        res.send({'errcode':0, 'msg':'旧密码输入错误！'})
+      }
+    }
+  })
+})
+
+/* 保存新密码的请求 */
+router.post('/savepwd', (req, res) => {
+  // 接收新密码
+  let { password } = req.body;
+  // 从cookie里取出当前登录用户id
+  let id = req.cookies.userId
+  // 根据id 构造sql更新语句
+  connection.query(sqlStr, (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      // 清除cookie
+      res.clearCookie('username');
+      res.clearCookie('password');
+      res.clearCookie('groups');
+      res.send({'errcode':1, 'msg': '密码修改成功！'});
+    }
+  })
+})
 
 /* 接收单条删除的请求 */
 router.get('/userDeleteOne', (req, res) => {
@@ -131,7 +195,7 @@ router.get('/userDeleteOne', (req, res) => {
   })
 })
 
-/* 修改用户账号 把原来数据查出来给前端 */
+/* 修改用户账号的请求 */
 router.get('/useredit', (req, res) => {
   // 接收id
   let { id } = req.query;
@@ -149,7 +213,8 @@ router.get('/useredit', (req, res) => {
   })
 })
 
-/* 接收用户账号 用修改的数据覆盖原来的数据 */
+
+/* 接收用户账号的请求 */
 router.post('/edit', (req, res) => {
   // 接收前端发过来的数据
   let { username, password, group, id } = req.body;
@@ -174,7 +239,8 @@ router.post('/edit', (req, res) => {
   })
 })
 
-/* 接收批量删除的数组 */
+
+/* 接收批量删除的数组的请求 */
 router.post('/batchesdel', (req, res) => {
   // 接收前端选中的数据 批量删除
   let idArr = req.body['idArr[]']

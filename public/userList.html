@@ -19,6 +19,8 @@
     <script src="./libs/vue/vue.min.js"></script>
     <!-- 引入elementui.min.js -->
     <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- 检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
 
 <body>
@@ -69,11 +71,25 @@
                                         </el-button>
                                     </template>
                                 </el-table-column>
-
                             </el-table>
+
+                            <!-- 分页 -->
+                            <div class="block" style="margin-top: 20px;">
+                                <el-pagination
+                                  @size-change="handleSizeChange"
+                                  @current-change="handleCurrentChange"
+                                  :current-page="currentPage"
+                                  :page-sizes="[1, 5, 10, 20]"
+                                  :page-size="pageSize"
+                                  layout="total, sizes, prev, pager, next, jumper"
+                                  :total="totalCount">
+                                </el-pagination>
+                            </div>
+
+                            <!-- 批量删除和取消全选按钮 -->
                             <div style="margin-top: 20px; text-align: left;">
-                                <el-button @click="batchesDel()">批量删除</el-button>
-                                <el-button @click="deselectall()">取消选择</el-button>
+                                <el-button type="danger" @click="batchesDel()" plain>批量删除</el-button>
+                                <el-button type="info" @click="deselectall()" plain>取消选择</el-button>
                             </div>
 
                         </div>
@@ -99,7 +115,10 @@
                     // 表格数据
                     tableData: [
                     ],
-                    multipleSelection: []
+                    multipleSelection: [],
+                    totalCount: '',
+                    currentPage: 1,
+                    pageSize:5
                 }
             },
             // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
@@ -114,17 +133,27 @@
                     // 跳转到修改页面 把id传过去
                     location.href = `./userEdit.html?id=${id}`
                 },
+                
                 // 请求所有数据的方法
                 getAllUsers () {
                     // 保留this 让他指向vue实例
                     var _this = this;
+
+                    // 把分页的 页面尺寸 当前页码 传给后端
+                    const params = {
+                        pageSize: this.pageSize,
+                        currentPage: this.currentPage
+                    }
                     
                     // 发送ajax请求 请求所有用户数据
-                    $.get('/users/userList', function (data) {
-                        // console.log('前端接收到的数据:', data);
-                        _this.tableData = data;
+                    $.get('/users/userList', params, function (data) {
+                        // 把总条数 赋给 totalCount
+                        _this.totalCount = data.totalCount;
+                        // 把对应页码 赋给 tableData
+                        _this.tableData = data.pageData;
                     })   
                 },
+                
                 // 单条删除函数
                 handleDelete (id) {
                     // 保留this
@@ -146,6 +175,20 @@
                     })
                 },
                 
+                // 随着页面尺寸（每页显示多少条）改变触发
+                handleSizeChange(val) {
+                    // 尺寸改变时 把尺寸的值赋 pageSize
+                    this.pageSize = val;
+                    this.getAllUsers();
+                },
+
+                // 随页码改变触发
+                handleCurrentChange(val) {
+                    // 当前页码改变时 把当前页码值赋给 currentPage
+                    this.currentPage = val;
+                    this.getAllUsers();
+                },
+
                 // 批量删除
                 batchesDel(){
                     // 保留this
@@ -176,6 +219,7 @@
                 deselectall() {
                     this.$refs.multipleTable.clearSelection();
                 },
+                
                 // 勾选触发函数
                 handleSelectionChange(val) {
                     // 把勾选中的数据传给multipleSelection

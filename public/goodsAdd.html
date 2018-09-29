@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>添加商品</title>
+    <!-- jquery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
+    <!-- 引入elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+
+    <!-- 引入vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- 引入elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- 检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <!-- 准备dom容器 -->
+    <div id="app">
+        <!-- 整个页面的容器 -->
+        <el-container>
+            <!-- 右侧内容容器 -->
+            <el-container>
+                <!-- 右侧头部 -->
+                <el-header>
+                    <h2>欢迎您 admin</h2>
+                    <p>添加新的商品</p>
+                </el-header>
+                <!-- 右侧主体 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>添加商品</span>
+                        </div>
+                        <div class="text item">
+                            <!-- 添加商品的表单 -->
+                            <el-form :model="goodsForm" :rules="rules" ref="goodsForm" label-width="100px" class="demo-ruleForm">
+                                <!-- 分类 -->
+                                <el-form-item label="所属分类" prop="classify">
+                                    <el-select v-model="goodsForm.classify" placeholder="---请选择分类---">
+                                        <el-option label="蔬菜" value="vegetables"></el-option>
+                                        <el-option label="水果" value="fruits"></el-option>
+                                    </el-select>
+                                </el-form-item>
+
+                                <!-- 商品条形码 -->
+                                <el-form-item label="商品条形码" prop="barCode">
+                                    <el-input v-model="goodsForm.barCode"></el-input>
+                                </el-form-item>
+
+                                <!-- 商品名称 -->
+                                <el-form-item label="商品名称" prop="goodsName">
+                                    <el-input v-model="goodsForm.goodsName"></el-input>
+                                </el-form-item>
+
+                                <!-- 商品售价 -->
+                                <el-form-item label="商品售价" prop="goodsPrice">
+                                    <el-input type="goodsPrice" v-model.number="goodsForm.goodsPrice" autocomplete="off"></el-input>
+                                </el-form-item>
+
+                                <!-- 市场价 -->
+                                <el-form-item label="市场价" prop="marketPrice">
+                                    <el-input type="marketPrice" v-model.number="goodsForm.marketPrice" autocomplete="off"></el-input>
+                                </el-form-item>
+
+                                <!-- 商品进价 -->
+                                <el-form-item label="商品进价" prop="PCSalePrice">
+                                    <el-input type="PCSalePrice" v-model.number="goodsForm.PCSalePrice" autocomplete="off"></el-input>
+                                </el-form-item>
+
+                                <!-- 入库数量 -->
+                                <el-form-item label="入库数量" prop="selectSum">
+                                    <el-input type="selectSum" v-model.number="goodsForm.selectSum" autocomplete="off"></el-input>
+                                </el-form-item>
+
+                                <!-- 商品重量 -->
+                                <el-form-item label="商品重量" prop="goodsWeight">
+                                    <el-input type="goodsWeight" v-model.number="goodsForm.goodsWeight" autocomplete="off"></el-input>
+                                </el-form-item>
+
+                                <!-- 商品单位 -->
+                                <el-form-item label="商品单位" prop="goodsUnit">
+                                    <el-input v-model="goodsForm.goodsUnit"></el-input>
+                                </el-form-item>
+
+                                <!-- 会员优惠 -->
+                                <el-form-item label="会员优惠" prop="discounts">
+                                    <el-radio-group v-model="goodsForm.discounts">
+                                        <el-radio label="享受"></el-radio>
+                                        <el-radio label="不享受"></el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+
+                                <!-- 会员优惠 -->
+                                <el-form-item label="是否促销" prop="promotion">
+                                    <el-radio-group v-model="goodsForm.promotion">
+                                        <el-radio label="启用"></el-radio>
+                                        <el-radio label="禁用"></el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+
+                                <!-- 商品简介 -->
+                                <el-form-item label="商品简介" prop="goodsIntro">
+                                    <el-input type="textarea" v-model="goodsForm.goodsIntro"></el-input>
+                                </el-form-item>
+
+                                <!-- 按钮操作 -->
+                                <el-form-item>
+                                    <el-button type="success" @click="submitForm('goodsForm')">添加</el-button>
+                                    <el-button @click="resetForm('goodsForm')">清空</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-card>
+                </el-main>
+                <!-- 右侧尾部 -->
+                <el-footer>
+                    &copy; Copyright 2018 华联超市管理系统
+                </el-footer>
+            </el-container>
+
+        </el-container>
+    </div>
+
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    goodsForm: {
+                        classify: '',
+                        barCode: '',
+                        goodsName: '',
+                        goodsPrice: '',
+                        marketPrice: '',
+                        PCSalePrice: '',
+                        selectSum: '',
+                        goodsWeight: '',
+                        goodsUnit: '',
+                        discounts: '',
+                        promotion: '',
+                        goodsIntro: ''
+                    },
+                    // 验证规则
+                    rules: {
+                        /* 验证分类 */
+                        classify: [
+                            { required: true, message: '请选择商品分类', trigger: 'change' }
+                        ],
+                        /* 验证商品条形码 */
+                        barCode: [
+                            { required: true, message: '商品条形码必填', trigger: 'blur' }
+                        ],
+                        /* 验证商品名称 */
+                        goodsName: [
+                            { required: true, message: '商品名称必填', trigger: 'blur' }
+                        ],
+                        /* 验证商品售价 */
+                        goodsPrice: [
+                            { required: true, message: '商品售价必填' },
+                            { type: 'number', message: '商品售价必须为数字值' }
+                        ],
+                        /* 验证市场价 */
+                        marketPrice: [
+                            { type: 'number', message: '市场价必须为数字值' }
+                        ],
+                        /* 验证商品进价 */
+                        PCSalePrice: [
+                            { type: 'number', message: '商品进价必须为数字值' }
+                        ],
+                        /* 验证入库数量 */
+                        selectSum: [
+                            { type: 'number', message: '入库数量必须为数字值' }
+                        ],
+                        /* 验证商品重量 */
+                        goodsWeight: [
+                            { type: 'number', message: '商品重量必须为数字值' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                // 提交表单
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        // 如果验证通过 valid就是true 否则 就是false
+                        if (valid) {
+                            
+                        } else {
+                            // 前端验证不通过 不允许提交
+                            console.log('前端验证失败 不允许提交!');
+                            return false;
+                        }
+                    });
+                },
+                // 重置表单
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

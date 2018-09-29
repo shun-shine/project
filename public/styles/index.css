@@ -171,3 +171,24 @@ html, body, #app {
 .addUserForm .el-form-item .el-input input {
     height: 30px;
 }
+
+.el-pager li.active{
+    color: #67c23a;
+}
+
+.el-button--default:hover{
+    background-color: #67c23a21;
+    color: #67c23ae0;
+    border: 1px solid #67c23a;
+}
+.el-button--default:focus{
+    background-color: #67c23a21;
+    color: #67c23ae0;
+    border: 1px solid #67c23a;
+}
+
+/* 商品添加 */
+.item .demo-ruleForm{
+    text-align: left;
+    width: 400px;
+}

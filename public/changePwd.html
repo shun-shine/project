@@ -39,24 +39,24 @@
                         </div>
                         <div class="text item">
                             <!-- 添加账号的表单 -->
-                            <el-form :model="changeForm" class="addUserForm" status-icon :rules="rules" ref="editForm"
+                            <el-form :model="changeForm" class="addUserForm" status-icon :rules="rules" ref="changeForm"
                             label-width="100px" class="demo-ruleForm">
                                 <!-- 旧密码 -->
-                                <el-form-item label="旧密码" prop="oldPassword">
-                                    <el-input type="text" v-model="changeForm.oldPassword" autocomplete="off"></el-input>
-                                </el-form-item>
-                                <!-- 密码 -->
-                                <el-form-item label="密&emsp;码" prop="password">
+                                <el-form-item label="旧的密码" prop="password">
                                     <el-input type="text" v-model="changeForm.password" autocomplete="off"></el-input>
                                 </el-form-item>
+                                <!-- 密码 -->
+                                <el-form-item label="新的密码" prop="newPassword">
+                                    <el-input type="text" v-model="changeForm.newPassword" autocomplete="off"></el-input>
+                                </el-form-item>
                                 <!-- 确认密码 -->
-                                <el-form-item label="确认密码" prop="confirmPwd">
+                                <el-form-item label="确认新密码" prop="confirmPwd">
                                     <el-input v-model="changeForm.confirmPwd"></el-input>
                                 </el-form-item>
 
                                 <!-- 登录&重置 -->
                                 <el-form-item>
-                                    <el-button type="success" @click="submitForm('changeForm')">修改</el-button>
+                                    <el-button type="success" @click="saveFrom('changeForm')">保存</el-button>
                                     <el-button @click="resetForm('changeForm')">重置</el-button>
                                 </el-form-item>
                             </el-form>
@@ -77,12 +77,24 @@
         new Vue({
             el: '#app',
             data() {
+                // 检查原来密码
+                let changePwd = (rule, value, callback) => {
+                    $.get(`/users/checkpwd?password=${value}`, function (data) {
+                        // 如果为空 请再次输入密码
+                        if (data.errcode === 0) {
+                           callback(new Error(data.msg))
+                       } else {
+                           callback();   // 成功的回调
+                       } 
+                    })
+                }
+
                 // 自己写一个检查密码的函数
                 let checkPass = (rule, value, callback) => {
                     // 如果为空 请再次输入密码
                     if (value === '') {
                         callback(new Error("请再次输入密码！"))
-                    } else if (value != this.changeForm.password) {      // 如果不等于密码的值 提示 密码不一致
+                    } else if (value != this.changeForm.newPassword) {      // 如果不等于密码的值 提示 密码不一致
                         callback(new Error("两次输入密码不一致！"))
                     } else {
                         callback();   // 成功的回调
@@ -91,65 +103,44 @@
                 return {
                     // 表单需要的数据源
                     changeForm: {
-                        oldPassword: '',  // 用户名
-                        password: '',  // 密码
-                        confirmPwd: ''
+                        password: '',  // 旧密码
+                        newPassword: '',  // 新密码
+                        confirmPwd: ''  // 确认新密码
                     },
                     // 验证规则
                     rules: {
-                        // 验证密码
+                        // 验证旧密码
                         password: [
-                            { required: true, message: '请输入密码', trigger: 'blur' }, // 非空验证
+                            { required: true, validator: changePwd, trigger: 'blur' }
+                        ],
+                        // 验证新密码
+                        newPassword: [
+                            { required: true, message: '请输入新密码密码', trigger: 'blur' }, // 非空验证
                             { min: 6, max: 12, message: '密码长度在 6 到 12 个字符', trigger: 'blur' } // 长度验证
                         ],
                         // 验证再次输入密码
                         confirmPwd: [
-                            { required: true, message: "请再次输入密码", trigger: 'blur' }
+                            { required: true, message: "请再次输入新密码", trigger: 'blur' }
                         ]
                     }
                 };
             },
-            // 生命周期钩子函数
-            created() {
-                // 保留this
-                var _this = this;
-                // 获取id
-                let id = location.href.split('=')[1];
-                // 发送ajax 把id给后端
-                $.get(`/users/useredit?id=${id}`, function (data) {
-                    // 把接收的数据一一对应填会表单
-                    _this.changeForm.oldPassword = data[0].password
-
-                });
-            },
+            
             methods: {
                 // 提交表单
-                submitForm(formName) {
+                saveFrom(formName) {
                     this.$refs[formName].validate((valid) => {
                         // 如果验证通过 valid就是true 否则 就是false
                         if (valid) {
-                            // 验证通过 允许把用户名和密码 发送给后端 (需要写ajax    
-
-                            // 定义参数对象
-                            const params = {
-                                oldPassword: this.changeForm.oldPassword,
-                                password: this.changeForm.password,
-                                confirmPwd: this.changeForm.confirmPwd,
-                                id: location.href.split('=')[1]
-                            }
-
-                            // 构造ajax 把数据发送个后端
-                            $.post('/users/edit', params, function (data) {
-                                // 如果成功 弹出对应的提示信息   data.errcode === 1
+                            // 发送ajax 把新密码给后端
+                            $.post('/users/savepwd', {"newPassword": this.changeForm.newPassword}, function (data) {
                                 if (data.errcode === 1) {
+                                    // 弹出成功提示
                                     alert(data.msg);
-                                    // 跳 转到用户账号列表页面
-                                    location.href = "./userList.html";
-                                } else {
-                                    // 否则 就是失败 弹出对应的提示信息  data.errcode === 0
-                                    alert(data.msg)
+                                    // 返回登录页面
+                                    window.top.location.href = './login.html';
                                 }
-                            })
+                            });
                         } else {
                             // 前端验证不通过 不允许提交
                             console.log('前端验证失败 不允许提交!');

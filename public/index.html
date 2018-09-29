@@ -15,6 +15,8 @@
     <script src="./libs/vue/vue.min.js"></script>
     <!-- 引入elementui.min.js -->
     <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- 检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
 
 <body>
@@ -52,8 +54,8 @@
                         <template slot="title">
                             <i class="el-icon-goods"></i>商品管理</template>
                         <el-menu-item-group>
-                            <el-menu-item index="2-1">添加商品</el-menu-item>
-                            <el-menu-item index="2-2">商品列表</el-menu-item>
+                            <el-menu-item index="2-1"><a href="./goodsAdd.html" target="contentWrap">添加商品</a></el-menu-item>
+                            <el-menu-item index="2-2"><a>商品列表</a></el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
 
