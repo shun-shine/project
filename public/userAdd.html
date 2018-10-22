@@ -142,7 +142,6 @@
                                 "password": this.loginForm.password,
                                 "group": this.loginForm.group
                             }
-                            console.log(params.group);
 
                             // 构造ajax 把数据发送个后端
                             $.post('/users/userAdd', params, function (data) {

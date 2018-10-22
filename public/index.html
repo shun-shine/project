@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>华联超市管理系统</title>
+    <!-- 引入jquery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- 引入elementui.min.css -->
     <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
     <!-- 引入自定义样式 -->
@@ -29,7 +31,7 @@
                 <!-- 左侧导航上部分文本 -->
                 <div class="menu-top-text">
                     <h2>华联超市管理系统</h2>
-                    <p>您好, admin</p>
+                    <p>您好, {{users}}</p>
                     <p>
                         <a href="./main.html" target="contentWrap">管理首页</a> |
                         <a href="./users/loginout">退出系统</a>
@@ -55,7 +57,7 @@
                             <i class="el-icon-goods"></i>商品管理</template>
                         <el-menu-item-group>
                             <el-menu-item index="2-1"><a href="./goodsAdd.html" target="contentWrap">添加商品</a></el-menu-item>
-                            <el-menu-item index="2-2"><a>商品列表</a></el-menu-item>
+                            <el-menu-item index="2-2"><a href="./goodsList.html" target="contentWrap">商品列表</a></el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
 
@@ -64,8 +66,8 @@
                         <template slot="title">
                             <i class="el-icon-tickets"></i>进货管理</template>
                         <el-menu-item-group>
-                            <el-menu-item index="3-1">添加库存</el-menu-item>
-                            <el-menu-item index="3-2">库存列表</el-menu-item>
+                            <el-menu-item index="3-1"><a href="./inventoryAdd.html" target="contentWrap">添加库存</a></el-menu-item>
+                            <el-menu-item index="3-2"><a href="./inventoryList.html" target="contentWrap">库存列表</a></el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
 
@@ -100,7 +102,19 @@
     <script>
         // 创建实例
         new Vue({
-            el: '#app'
+            el: '#app',
+            data () {
+                return{
+                    users:''
+                }
+            },
+            created () {
+                let _this = this;
+                $.get('/users/getusers', function (data) {
+                    // 把请求获取的用户名赋给users
+                    _this.users = data;
+                })
+            }
         })
     </script>
 

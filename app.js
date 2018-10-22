@@ -7,6 +7,7 @@ var logger = require('morgan');
 // 引入路由
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var goodsRouter = require('./routes/goods');
 
 var app = express();
 
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 分配路由
 app.use('/', indexRouter);
+app.use('/goods', goodsRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

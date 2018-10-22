@@ -9,6 +9,13 @@ connection.connect(() => {
   console.log('数据库连接成功!');
 });
 
+/* 获取当前登录用户的用户名 */
+router.get('/getusers', (req, res) => {
+  //获取当前登录的用户名
+  let users = req.cookies.username;
+  res.send(users);
+})
+
 /* 检查用户名和密码的请求 */
 router.post('/checklogin', (req, res) => {
   // 接受用户和密码
@@ -153,9 +160,11 @@ router.get('/checkpwd', (req, res) => {
 /* 保存新密码的请求 */
 router.post('/savepwd', (req, res) => {
   // 接收新密码
-  let { password } = req.body;
+  let { newPassword } = req.body;
   // 从cookie里取出当前登录用户id
   let id = req.cookies.userId
+
+  let sqlStr = `update users set password='${newPassword}' where id=${id}`;
   // 根据id 构造sql更新语句
   connection.query(sqlStr, (err, data) => {
     if (err) {

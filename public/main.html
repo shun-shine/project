@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>主页</title>
+    <!-- 引入jquery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- 引入elementui.min.css -->
     <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
     <!-- 引入自定义样式 -->
@@ -24,7 +26,7 @@
         <el-container>
             <!-- 右侧头部 -->
             <el-header>
-                <h2>欢迎您 admin</h2>
+                <h2>欢迎您 {{users}}</h2>
                 <p>查看详细系统信息</p>
             </el-header>
             <!-- 右侧主体 -->
@@ -74,14 +76,12 @@
                                                 </el-table-column>
                                                 <el-table-column prop="sales" label="销量">
                                                 </el-table-column>
-
                                             </el-table>
                                         </div>
                                     </el-card>
                                 </div>
                             </el-col>
                         </el-row>
-
                     </div>
                 </el-card>
             </el-main>
@@ -98,6 +98,7 @@
             el: '#app',
             data() {
                 return {
+                    users: '',
                     tableData: [
                         {
                             goodsname: '茅台酒',
@@ -117,6 +118,13 @@
                         }
                     ]
                 }
+            },
+            created () {
+                let _this = this;
+                $.get('/users/getusers', function (data) {
+                    // 把请求获取的用户名赋给users
+                    _this.users = data;
+                })
             }
         })
     </script>

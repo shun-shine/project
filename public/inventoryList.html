@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>账号管理</title>
+    <!-- jquery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
+    <!-- moment.js -->
+    <script src="./libs/moment/moment.js"></script>
+    <!-- 引入elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+
+    <!-- 引入vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- 引入elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- 检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <!-- 准备dom容器 -->
+    <div id="app">
+        <!-- 整个页面的容器 -->
+        <el-container>
+            <!-- 右侧内容容器 -->
+            <el-container>
+                <!-- 右侧头部 -->
+                <el-header>
+                    <h2>欢迎您 admin</h2>
+                    <p>库存列表</p>
+                </el-header>
+                <!-- 右侧主体 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>库存列表</span>
+                        </div>
+                        <div class="text item">
+                            <!-- 搜索表单 -->
+                            <div style="text-align: left">
+                                <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+                                    <!-- 分类 -->
+                                    <el-form-item label="分类名称">
+                                        <el-select v-model="searchForm.searchCateName" placeholder="请选择分类">
+                                            <el-option label="全部" value="全部"></el-option>
+                                            <el-option label="酒水类" value="酒水类"></el-option>
+                                            <el-option label="食品类" value="食品类"></el-option>
+                                            <el-option label="日用品" value="日用品"></el-option>
+                                            <el-option label="电子类" value="电子类"></el-option>
+                                            <el-option label="服装类" value="服装类"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <!-- 关键字 -->
+                                    <el-form-item label="关键字">
+                                        <el-input v-model="searchForm.searchKeyWord" placeholder="商品名称或条形码"></el-input>
+                                    </el-form-item>
+                                    <el-form-item>
+                                        <el-button type="primary" @click="search">查询</el-button>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
+                            <!-- 用户列表表格 -->
+                            <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
+                                @selection-change="handleSelectionChange">
+                                <!-- 选择框 -->
+                                <el-table-column type="selection">
+                                </el-table-column>
+                                <!-- 商品条形码 -->
+                                <el-table-column prop="barCode" label="条形码">
+                                </el-table-column>
+                                <!-- 商品名称 -->
+                                <el-table-column prop="goodsName" label="商品名称">
+                                </el-table-column>
+                                <!-- 进价 -->
+                                <el-table-column prop="costPrice" label="进价">
+                                </el-table-column>
+                                <!-- 库存 -->
+                                <el-table-column prop="goodsNum" label="库存">
+                                </el-table-column>
+
+                                <!-- 入库日期 -->
+                                <el-table-column label="日期">
+                                    <template slot-scope="scope">{{ scope.row.ctime | formatCtime }}</template>
+                                </el-table-column>
+                                <!-- 操作 -->
+                                <el-table-column label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button size="mini" type="success" @click="handleEdit(scope.row.id)">
+                                            <i class="el-icon-edit"></i>
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">
+                                            <i class="el-icon-delete"></i>
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+
+                            <!-- 分页 -->
+                            <div class="block" style="margin-top: 20px;">
+                                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                    :current-page="currentPage" :page-sizes="[1, 5, 10, 20]" :page-size="pageSize"
+                                    layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+                                </el-pagination>
+                            </div>
+
+                            <!-- 批量删除和取消全选按钮 -->
+                            <div style="margin-top: 20px; text-align: left;">
+                                <el-button type="danger" @click="batchesDel()" plain>批量删除</el-button>
+                                <el-button type="info" @click="deselectall()" plain>取消选择</el-button>
+                            </div>
+
+                        </div>
+                    </el-card>
+                </el-main>
+                <!-- 右侧尾部 -->
+                <el-footer>
+                    &copy; Copyright 2018 华联超市管理系统
+                </el-footer>
+            </el-container>
+
+        </el-container>
+    </div>
+
+    <script>
+        // 创建实例
+        new Vue({
+            // 挂载dom
+            el: '#app',
+            // 数据
+            data() {
+                return {
+                    // 查询表单的数据
+                    searchForm: {
+                        searchCateName: '',
+                        searchKeyWord: ''
+                    },
+                    // 表格数据
+                    tableData: [
+                    ],
+                    multipleSelection: [],
+                    totalCount: '',
+                    currentPage: 1,
+                    pageSize: 5
+                }
+            },
+            // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+            created() {
+                // 调用一次请求所有数据的方法
+                this.getAllUsers();
+            },
+            // 方法
+            methods: {
+                // 查询函数
+                search() {
+                    this.getAllUsers();
+                },
+
+                // 随着页面尺寸（每页显示多少条）改变触发
+                handleSizeChange(val) {
+                    // 尺寸改变时 把尺寸的值赋 pageSize
+                    this.pageSize = val;
+                    this.getAllUsers();
+                },
+
+                // 随页码改变触发
+                handleCurrentChange(val) {
+                    // 当前页码改变时 把当前页码值赋给 currentPage
+                    this.currentPage = val;
+                    this.getAllUsers();
+                },
+
+                // 修改方法
+                handleEdit(id) {
+                    // 跳转到修改页面 把id传过去
+                    location.href = `./inventoryEdit.html?id=${id}`
+                },
+
+                // 请求所有数据的方法
+                getAllUsers() {
+                    // 保留this 让他指向vue实例
+                    var _this = this;
+
+                    // 把分页的 页面尺寸 当前页码 传给后端
+                    const params = {
+                        pageSize: this.pageSize,
+                        currentPage: this.currentPage,
+                        "searchCateName": this.searchForm.searchCateName,
+                        "searchKeyWord": this.searchForm.searchKeyWord
+                    }
+
+                    // 发送ajax请求 请求所有用户数据
+                    $.get('/goods/goodsList', params, function (data) {
+                        _this.totalCount = data.totalCount;
+                        _this.tableData = data.pageData;
+                    })
+                },
+
+                // 单条删除函数
+                handleDelete(id) {
+                    // 保留this
+                    var _this = this;
+
+                    // 发送单条删除的请求
+                    $.get(`/goods/goodsDeleteOne?id=${id}`, function (data) {
+                        // 判断 如果删除成功 弹出删除成功 刷新页面
+                        if (data.errcode === 1) {
+                            // 弹出删除成功
+                            alert(data.msg);
+                            // 刷新页面 ？怎么刷
+                            _this.getAllUsers();
+
+                        } else {
+                            // 否则 弹出删除失败信息 
+                            alert(data.msg);
+                        }
+                    })
+                },
+
+                // 批量删除
+                batchesDel() {
+                    // 保留this
+                    var _this = this;
+                    // 从勾选的数据中 把id获取到
+                    let idArr = this.multipleSelection.map(v => v.id);
+
+                    // 如果用户没选中
+                    if (!idArr.length) {
+                        alert('请选择以后进行操作!');
+                        return false;
+                    }
+                    // 发送ajax 把id发送给后端
+                    $.post('/goods/batchesdel', { "idArr": idArr }, function (data) {
+                        if (data.errcode === 1) {
+                            // 如果成功弹出成功提示
+                            alert(data.msg);
+                            // 刷新页面
+                            _this.getAllUsers();
+                        } else {
+                            // 否则 弹出错误提示
+                            alert(data.msg);
+                        }
+                    })
+                },
+
+                // 取消选中
+                deselectall() {
+                    this.$refs.multipleTable.clearSelection();
+                },
+
+                // 勾选触发函数
+                handleSelectionChange(val) {
+                    // 把勾选中的数据传给multipleSelection
+                    this.multipleSelection = val;
+                }
+            },
+            // 过滤器
+            filters: {
+                // 过滤时间
+                formatCtime(value) {
+                    return moment(value).format("YYYY-MM-DD");
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>
